@@ -1166,7 +1166,6 @@ function openVersionModal(projectId, versionId) {
     document.getElementById('vm-changes').value = v.changes || '';
     document.getElementById('vm-reason').value = v.reason || '';
     document.getElementById('vm-error').value = v.error || '';
-    document.getElementById('vm-drive').value = v.drive || '';
     document.getElementById('vm-file-name').value = v.fileName || '';
     document.getElementById('vm-file-content').value = v.fileContent || '';
     if (v.fileName) {
@@ -1189,7 +1188,6 @@ function openVersionModal(projectId, versionId) {
     document.getElementById('vm-changes').value = '';
     document.getElementById('vm-reason').value = '';
     document.getElementById('vm-error').value = '';
-    document.getElementById('vm-drive').value = '';
     document.getElementById('vm-file-name').value = '';
     document.getElementById('vm-file-content').value = '';
     resetFileUpload();
@@ -1224,7 +1222,6 @@ function saveVersion() {
     changes: document.getElementById('vm-changes').value.trim(),
     reason: document.getElementById('vm-reason').value.trim(),
     error: document.getElementById('vm-error').value.trim(),
-    drive: document.getElementById('vm-drive').value.trim(),
     fileName: document.getElementById('vm-file-name').value || null,
     fileContent: document.getElementById('vm-file-content').value || null,
   };
