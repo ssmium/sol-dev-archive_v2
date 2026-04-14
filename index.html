@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOL.DEV — 개발 아카이브</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&family=Pretendard:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e10;
+    --surface: #18181c;
+    --surface2: #22222a;
+    --border: #2e2e38;
+    --accent: #c8f04e;
+    --accent2: #7c6af7;
+    --text: #e8e8f0;
+    --text2: #8888a0;
+    --text3: #55556a;
+    --red: #f07070;
+    --yellow: #f0c060;
+    --green: #70d0a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Pretendard', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .logo span { color: var(--text3); }
+  header nav {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .nav-btn:hover { border-color: var(--border); color: var(--text); }
+  .nav-btn.active { background: var(--surface2); border-color: var(--border); color: var(--accent); }
+
+  /* LAYOUT */
+  .layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* SIDEBAR */
+  aside {
+    width: 260px;
+    min-width: 260px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+  }
+  .sidebar-header {
+    padding: 20px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sidebar-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .icon-btn {
+    width: 28px; height: 28px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .icon-btn:hover { background: var(--surface2); color: var(--text); }
+
+  .project-list { flex: 1; overflow-y: auto; padding: 0 8px 16px; }
+  .project-item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .project-item:hover { background: var(--surface2); }
+  .project-item.active { background: var(--surface2); }
+  .project-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .project-info { flex: 1; min-width: 0; }
+  .project-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .project-item.active .project-name { color: var(--accent); }
+  .project-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  /* MAIN */
+  main { flex: 1; overflow-y: auto; padding: 32px 40px; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    gap: 12px;
+  }
+  .empty-icon { font-size: 40px; opacity: .3; }
+  .empty-text { color: var(--text3); font-family: 'DM Mono', monospace; font-size: 13px; }
+
+  /* PROJECT DETAIL */
+  .project-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .project-title-area {}
+  .project-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+  .project-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    color: var(--text);
+    font-style: italic;
+    line-height: 1.2;
+  }
+  .project-desc {
+    color: var(--text2);
+    font-size: 13px;
+    margin-top: 6px;
+    max-width: 500px;
+    line-height: 1.6;
+  }
+  .btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all .15s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #0e0e10;
+  }
+  .btn-primary:hover { background: #d8ff5e; }
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { color: var(--text); border-color: var(--text3); }
+  .btn-danger {
+    background: none;
+    color: var(--red);
+    border: 1px solid transparent;
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  .btn-danger:hover { border-color: var(--red); background: rgba(240,112,112,.08); }
+
+  /* STATS */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    flex: 1;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .stat-value span { color: var(--accent); }
+
+  /* VERSION SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+  }
+
+  /* VERSION TIMELINE */
+  .version-timeline { display: flex; flex-direction: column; gap: 2px; }
+
+  .version-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color .15s;
+  }
+  .version-card:hover { border-color: var(--text3); }
+  .version-card.expanded { border-color: var(--border); }
+
+  .version-card-head {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .v-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--surface2);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .v-summary { flex: 1; }
+  .v-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .v-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .v-tags { display: flex; gap: 6px; align-items: center; }
+  .v-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .tag-fix { background: rgba(240,112,112,.15); color: var(--red); }
+  .tag-feat { background: rgba(124,106,247,.15); color: #a090ff; }
+  .tag-update { background: rgba(112,208,160,.15); color: var(--green); }
+  .tag-init { background: rgba(200,240,78,.1); color: var(--accent); }
+  .v-chevron {
+    color: var(--text3);
+    font-size: 12px;
+    transition: transform .2s;
+    font-family: 'DM Mono', monospace;
+  }
+  .version-card.expanded .v-chevron { transform: rotate(180deg); }
+
+  .version-card-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .version-card.expanded .version-card-body { display: block; }
+
+  .v-section { margin-top: 16px; }
+  .v-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .v-section-label::before {
+    content: '';
+    display: inline-block;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .v-content {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .v-drive-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent2);
+    text-decoration: none;
+    padding: 6px 12px;
+    background: rgba(124,106,247,.1);
+    border-radius: 6px;
+    border: 1px solid rgba(124,106,247,.2);
+    transition: all .15s;
+    margin-top: 4px;
+  }
+  .v-drive-link:hover { background: rgba(124,106,247,.2); }
+
+  .v-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    justify-content: flex-end;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 560px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(16px);
+    transition: transform .2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-header {
+    padding: 24px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .modal-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    color: var(--text);
+    font-style: italic;
+  }
+  .modal-close {
+    width: 32px; height: 32px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .modal-body { padding: 0 24px 24px; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 6px;
+  }
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Pretendard', sans-serif;
+    font-size: 13px;
+    transition: border-color .15s;
+    outline: none;
+    resize: none;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    border-color: var(--accent);
+  }
+  .form-textarea { min-height: 80px; line-height: 1.6; }
+  .form-select option { background: var(--surface2); }
+
+  .form-row { display: flex; gap: 12px; }
+  .form-row .form-group { flex: 1; }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 8px;
+  }
+
+  /* TAG SELECT */
+  .tag-options { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag-opt {
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text2);
+    transition: all .15s;
+  }
+  .tag-opt.selected-fix { background: rgba(240,112,112,.15); color: var(--red); border-color: var(--red); }
+  .tag-opt.selected-feat { background: rgba(124,106,247,.15); color: #a090ff; border-color: #a090ff; }
+  .tag-opt.selected-update { background: rgba(112,208,160,.15); color: var(--green); border-color: var(--green); }
+  .tag-opt.selected-init { background: rgba(200,240,78,.1); color: var(--accent); border-color: var(--accent); }
+  .tag-opt:not([class*="selected"]):hover { border-color: var(--text3); color: var(--text); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* COLOR OPTIONS */
+  .color-opts { display: flex; gap: 8px; }
+  .color-opt {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .color-opt:hover { transform: scale(1.2); }
+  .color-opt.selected { border-color: white; }
+
+  /* SEARCH */
+  .search-bar {
+    padding: 12px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    outline: none;
+  }
+  .search-input::placeholder { color: var(--text3); }
+  .search-input:focus { border-color: var(--accent); }
+
+  /* FILE UPLOAD */
+  .file-upload-area {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text3);
+    transition: all .15s;
+  }
+  .file-upload-area:hover { border-color: var(--accent); color: var(--accent); }
+  .file-upload-area.has-file { border-color: var(--green); color: var(--green); background: rgba(112,208,160,.05); }
+
+  .file-btns { display: flex; gap: 6px; margin-top: 4px; }
+  .btn-file {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border); background: none;
+    color: var(--text2); transition: all .15s; text-decoration: none;
+  }
+  .btn-file:hover { border-color: var(--text3); color: var(--text); }
+  .btn-file.preview { border-color: var(--accent2); color: var(--accent2); background: rgba(124,106,247,.08); }
+  .btn-file.preview:hover { background: rgba(124,106,247,.15); }
+  .btn-file.download { border-color: var(--green); color: var(--green); background: rgba(112,208,160,.08); }
+  .btn-file.download:hover { background: rgba(112,208,160,.15); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 999;
+    transform: translateY(8px);
+    opacity: 0;
+    transition: all .2s;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--green); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">SOL<span>.DEV</span> / archive</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span id="sync-status" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;"></span>
+    <nav>
+      <button class="nav-btn active" id="nav-projects" onclick="setView('projects')">프로젝트</button>
+      <button class="nav-btn" id="nav-all" onclick="setView('all')">전체 버전</button>
+      <button class="nav-btn" onclick="openSettingsModal()" title="GitHub 설정">⚙</button>
+    </nav>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-header">
+      <span class="sidebar-title">Projects</span>
+      <button class="icon-btn" onclick="openProjectModal()" title="새 프로젝트">+</button>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" id="project-search" placeholder="프로젝트 검색..." oninput="renderSidebar()">
+    </div>
+    <div class="project-list" id="project-list"></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main-area">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">◈</div>
+      <div class="empty-text">프로젝트를 선택하거나 새로 만들어보세요</div>
+    </div>
+    <div id="project-detail" style="display:none;"></div>
+    <div id="all-versions" style="display:none;"></div>
+  </main>
+</div>
+
+<!-- PROJECT MODAL -->
+<div class="modal-overlay" id="project-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="project-modal-title">새 프로젝트</div>
+      <button class="modal-close" onclick="closeModal('project-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pm-id">
+      <div class="form-group">
+        <label class="form-label">프로젝트 이름</label>
+        <input class="form-input" id="pm-name" placeholder="예: SOLSIGNAL, wallet.html, 오늘서울어디갈까">
+      </div>
+      <div class="form-group">
+        <label class="form-label">설명 (선택)</label>
+        <textarea class="form-textarea" id="pm-desc" placeholder="어떤 프로젝트인지 간단히..." style="min-height:60px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">색상</label>
+        <div class="color-opts" id="color-opts">
+          <div class="color-opt selected" data-color="#c8f04e" style="background:#c8f04e;" onclick="selectColor('#c8f04e')"></div>
+          <div class="color-opt" data-color="#7c6af7" style="background:#7c6af7;" onclick="selectColor('#7c6af7')"></div>
+          <div class="color-opt" data-color="#f07070" style="background:#f07070;" onclick="selectColor('#f07070')"></div>
+          <div class="color-opt" data-color="#f0c060" style="background:#f0c060;" onclick="selectColor('#f0c060')"></div>
+          <div class="color-opt" data-color="#70d0a0" style="background:#70d0a0;" onclick="selectColor('#70d0a0')"></div>
+          <div class="color-opt" data-color="#60b8f0" style="background:#60b8f0;" onclick="selectColor('#60b8f0')"></div>
+          <div class="color-opt" data-color="#f090d0" style="background:#f090d0;" onclick="selectColor('#f090d0')"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('project-modal')">취소</button>
+        <button class="btn btn-primary" onclick="saveProject()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VERSION MODAL -->
+<div class="modal-overlay" id="version-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="version-modal-title">버전 추가</div>
+      <button class="modal-close" onclick="closeModal('version-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="vm-id">
+      <input type="hidden" id="vm-project-id">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">버전 번호</label>
+          <input class="form-input" id="vm-version" placeholder="예: v1.0, v2.3">
+        </div>
+        <div class="form-group">
+          <label class="form-label">날짜</label>
+          <input class="form-input" id="vm-date" type="date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">제목 / 한 줄 요약</label>
+        <input class="form-input" id="vm-title" placeholder="이 버전을 한 줄로 표현하면?">
+      </div>
+      <div class="form-group">
+        <label class="form-label">태그</label>
+        <div class="tag-options">
+          <button class="tag-opt" data-tag="init" onclick="toggleTag(this)">🌱 init</button>
+          <button class="tag-opt" data-tag="feat" onclick="toggleTag(this)">✨ feat</button>
+          <button class="tag-opt" data-tag="fix" onclick="toggleTag(this)">🔧 fix</button>
+          <button class="tag-opt" data-tag="update" onclick="toggleTag(this)">🔄 update</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">무엇을 바꿨나요?</label>
+        <textarea class="form-textarea" id="vm-changes" placeholder="변경 내용을 적어주세요"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">왜 바꿨나요?</label>
+        <textarea class="form-textarea" id="vm-reason" placeholder="업데이트 이유나 배경을 적어주세요"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">발생한 오류 (선택)</label>
+        <textarea class="form-textarea" id="vm-error" placeholder="어떤 버그나 오류가 있었나요?"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">HTML 파일 첨부 (선택)</label>
+        <div class="file-upload-area" id="file-upload-area" onclick="document.getElementById('vm-file-input').click()">
+          <div id="file-upload-label">📎 클릭해서 HTML 파일 선택</div>
+        </div>
+        <input type="file" id="vm-file-input" accept=".html" style="display:none;" onchange="handleFileUpload(this)">
+        <input type="hidden" id="vm-file-name">
+        <input type="hidden" id="vm-file-content">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('version-modal')">취소</button>
+        <button class="btn btn-primary" onclick="saveVersion()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GITHUB SETTINGS MODAL -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title">GitHub 연동 설정</div>
+      <button class="modal-close" onclick="closeModal('settings-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);line-height:1.7;">
+        📋 <strong style="color:var(--text);">설정 방법</strong><br>
+        1. GitHub에서 <strong>private repo</strong> 생성 (예: sol-dev-archive)<br>
+        2. Settings → Developer settings → <strong>Personal access tokens</strong><br>
+        3. <strong>Fine-grained token</strong> 생성 → repo 권한: Contents <strong>Read & Write</strong><br>
+        4. 아래에 입력 후 저장
+      </div>
+      <div class="form-group">
+        <label class="form-label">GitHub 사용자명 (owner)</label>
+        <input class="form-input" id="s-owner" placeholder="예: solkim">
+      </div>
+      <div class="form-group">
+        <label class="form-label">레포지토리 이름</label>
+        <input class="form-input" id="s-repo" placeholder="예: sol-dev-archive">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Personal Access Token</label>
+        <input class="form-input" id="s-token" type="password" placeholder="github_pat_...">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-top:5px;">토큰은 이 브라우저 로컬에만 저장됩니다</div>
+      </div>
+      <div class="modal-footer" style="gap:8px;">
+        <button class="btn btn-secondary" onclick="clearGHConfig()">연동 해제</button>
+        <button class="btn btn-secondary" onclick="closeModal('settings-modal')">취소</button>
+        <button class="btn btn-primary" onclick="saveGHConfig()">저장 & 연동</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────
+let state = {
+  projects: [],
+  versions: [],
+  selectedProject: null,
+  currentView: 'projects',
+  editingProjectId: null,
+  editingVersionId: null,
+  selectedColor: '#c8f04e',
+  selectedTags: []
+};
+
+// ─── GITHUB CONFIG ───────────────────────────────────────────
+function getGHConfig() {
+  return {
+    token: localStorage.getItem('gh-token') || '',
+    owner: localStorage.getItem('gh-owner') || '',
+    repo:  localStorage.getItem('gh-repo')  || '',
+  };
+}
+function isGHConfigured() {
+  const c = getGHConfig();
+  return c.token && c.owner && c.repo;
+}
+function ghHeaders() {
+  return {
+    'Authorization': `Bearer ${getGHConfig().token}`,
+    'Content-Type': 'application/json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+}
+function ghUrl() {
+  const { owner, repo } = getGHConfig();
+  return `https://api.github.com/repos/${owner}/${repo}/contents/data.json`;
+}
+
+// ─── PERSISTENCE ─────────────────────────────────────────────
+let _sha = null; // 현재 data.json의 SHA (업데이트 시 필요)
+
+function setSyncStatus(status) {
+  // status: 'idle' | 'syncing' | 'ok' | 'error' | 'local'
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const map = {
+    idle:    { icon: '○', color: 'var(--text3)',  label: '' },
+    syncing: { icon: '◌', color: 'var(--yellow)', label: '동기화 중...' },
+    ok:      { icon: '●', color: 'var(--green)',  label: 'GitHub 연동됨' },
+    error:   { icon: '●', color: 'var(--red)',    label: '동기화 실패' },
+    local:   { icon: '●', color: 'var(--text3)',  label: '로컬 저장' },
+  };
+  const s = map[status] || map.idle;
+  el.innerHTML = `<span style="color:${s.color};font-size:9px;">${s.icon}</span> ${s.label}`;
+}
+
+async function save() {
+  const data = { projects: state.projects, versions: state.versions };
+  // 항상 로컬에도 저장 (오프라인 대비)
+  localStorage.setItem('sol-dev-archive', JSON.stringify(data));
+
+  if (!isGHConfigured()) { setSyncStatus('local'); return; }
+
+  setSyncStatus('syncing');
+  try {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    const body = { message: 'update archive data', content };
+    if (_sha) body.sha = _sha;
+
+    const res = await fetch(ghUrl(), {
+      method: 'PUT',
+      headers: ghHeaders(),
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const json = await res.json();
+    _sha = json.content.sha;
+    setSyncStatus('ok');
+  } catch(e) {
+    console.error(e);
+    setSyncStatus('error');
+    toast('GitHub 저장 실패 — 로컬에만 저장됨', '');
+  }
+}
+
+async function load() {
+  // 로컬 캐시 먼저 (빠른 초기 렌더)
+  const local = localStorage.getItem('sol-dev-archive');
+  if (local) {
+    const parsed = JSON.parse(local);
+    state.projects = parsed.projects || [];
+    state.versions = parsed.versions || [];
+  }
+
+  if (!isGHConfigured()) { setSyncStatus('local'); return; }
+
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(ghUrl(), { headers: ghHeaders() });
+    if (res.status === 404) {
+      // 파일 없음 = 첫 접속, 현재 데이터로 초기 커밋
+      _sha = null;
+      setSyncStatus('ok');
+      await save();
+      return;
+    }
+    if (!res.ok) throw new Error();
+    const json = await res.json();
+    _sha = json.sha;
+    const decoded = decodeURIComponent(escape(atob(json.content.replace(/\n/g,''))));
+    const parsed = JSON.parse(decoded);
+    state.projects = parsed.projects || [];
+    state.versions = parsed.versions || [];
+    localStorage.setItem('sol-dev-archive', JSON.stringify(parsed));
+    setSyncStatus('ok');
+    renderSidebar();
+    renderMain();
+  } catch(e) {
+    console.error(e);
+    setSyncStatus('error');
+  }
+}
+
+// ─── UTILS ───────────────────────────────────────────────────
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function today() { return new Date().toISOString().slice(0,10); }
+function formatDate(d) {
+  if (!d) return '';
+  const [y,m,day] = d.split('-');
+  return `${y}.${m}.${day}`;
+}
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  setTimeout(() => el.className = 'toast', 2000);
+}
+
+// ─── VIEW ────────────────────────────────────────────────────
+function setView(v) {
+  state.currentView = v;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + v).classList.add('active');
+  renderMain();
+}
+
+// ─── RENDER SIDEBAR ──────────────────────────────────────────
+function renderSidebar() {
+  const q = document.getElementById('project-search').value.toLowerCase();
+  const list = document.getElementById('project-list');
+  const filtered = state.projects.filter(p => p.name.toLowerCase().includes(q));
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="padding:16px 12px; color:var(--text3); font-family:'DM Mono',monospace; font-size:12px;">프로젝트 없음</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(p => {
+    const vCount = state.versions.filter(v => v.projectId === p.id).length;
+    const latest = state.versions.filter(v => v.projectId === p.id).sort((a,b) => b.date > a.date ? 1 : -1)[0];
+    const active = state.selectedProject === p.id ? 'active' : '';
+    return `<div class="project-item ${active}" onclick="selectProject('${p.id}')">
+      <div class="project-dot" style="background:${p.color}"></div>
+      <div class="project-info">
+        <div class="project-name">${p.name}</div>
+        <div class="project-meta">${vCount}개 버전${latest ? ' · ' + formatDate(latest.date) : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── SELECT PROJECT ──────────────────────────────────────────
+function selectProject(id) {
+  state.selectedProject = id;
+  state.currentView = 'projects';
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-projects').classList.add('active');
+  renderSidebar();
+  renderMain();
+}
+
+// ─── RENDER MAIN ─────────────────────────────────────────────
+function renderMain() {
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('project-detail').style.display = 'none';
+  document.getElementById('all-versions').style.display = 'none';
+
+  if (state.currentView === 'all') {
+    renderAllVersions();
+    return;
+  }
+
+  if (!state.selectedProject) {
+    document.getElementById('empty-state').style.display = 'flex';
+    return;
+  }
+
+  renderProjectDetail();
+}
+
+// ─── PROJECT DETAIL ──────────────────────────────────────────
+function renderProjectDetail() {
+  const p = state.projects.find(p => p.id === state.selectedProject);
+  if (!p) return;
+
+  const versions = state.versions
+    .filter(v => v.projectId === p.id)
+    .sort((a,b) => b.date > a.date ? 1 : -1);
+
+  const detail = document.getElementById('project-detail');
+  detail.style.display = 'block';
+
+  const tagCounts = {};
+  versions.forEach(v => (v.tags||[]).forEach(t => tagCounts[t] = (tagCounts[t]||0)+1));
+
+  detail.innerHTML = `
+    <div class="project-header">
+      <div class="project-title-area">
+        <div class="project-tag">PROJECT · ${p.id.toUpperCase()}</div>
+        <div class="project-title" style="color:${p.color}">${p.name}</div>
+        ${p.desc ? `<div class="project-desc">${p.desc}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;flex-shrink:0;">
+        <button class="btn btn-secondary" onclick="openProjectModal('${p.id}')">편집</button>
+        <button class="btn btn-danger" onclick="deleteProject('${p.id}')">삭제</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">총 버전</div>
+        <div class="stat-value"><span>${versions.length}</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">최신 버전</div>
+        <div class="stat-value" style="font-size:16px;">${versions[0]?.version || '—'}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">마지막 업데이트</div>
+        <div class="stat-value" style="font-size:14px;">${versions[0] ? formatDate(versions[0].date) : '—'}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">버그 수정</div>
+        <div class="stat-value"><span>${tagCounts['fix']||0}</span></div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-label">Version History</span>
+      <button class="btn btn-primary" onclick="openVersionModal('${p.id}')">+ 버전 추가</button>
+    </div>
+
+    <div class="version-timeline" id="version-list">
+      ${versions.length === 0
+        ? `<div style="color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;padding:20px 0;">아직 버전이 없어요. 첫 버전을 추가해보세요!</div>`
+        : versions.map(v => renderVersionCard(v)).join('')
+      }
+    </div>
+  `;
+}
+
+// ─── VERSION CARD ────────────────────────────────────────────
+function renderVersionCard(v) {
+  const tagHtml = (v.tags||[]).map(t => {
+    const labels = { fix:'🔧 fix', feat:'✨ feat', update:'🔄 update', init:'🌱 init' };
+    return `<span class="v-tag tag-${t}">${labels[t]||t}</span>`;
+  }).join('');
+
+  const hasDrive = v.drive && v.drive.trim();
+  const hasError = v.error && v.error.trim();
+
+  return `<div class="version-card" id="vc-${v.id}">
+    <div class="version-card-head" onclick="toggleVersion('${v.id}')">
+      <div class="v-badge">${v.version}</div>
+      <div class="v-summary">
+        <div class="v-title">${v.title||'(제목 없음)'}</div>
+        <div class="v-date">${formatDate(v.date)}</div>
+      </div>
+      <div class="v-tags">${tagHtml}</div>
+      <div class="v-chevron">▾</div>
+    </div>
+    <div class="version-card-body">
+      ${v.changes ? `<div class="v-section"><div class="v-section-label">변경 내용</div><div class="v-content">${v.changes}</div></div>` : ''}
+      ${v.reason ? `<div class="v-section"><div class="v-section-label">변경 이유</div><div class="v-content">${v.reason}</div></div>` : ''}
+      ${hasError ? `<div class="v-section"><div class="v-section-label" style="color:var(--red);">발생한 오류</div><div class="v-content" style="color:var(--red);opacity:.8;">${v.error}</div></div>` : ''}
+      ${v.fileName ? `<div class="v-section"><div class="v-section-label">첨부 파일</div>
+        <div class="file-btns">
+          <button class="btn-file preview" onclick="previewFile('${v.id}')">🔍 미리보기</button>
+          <button class="btn-file download" onclick="downloadFile('${v.id}')">⬇ 다운로드</button>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);align-self:center;">${v.fileName}</span>
+        </div></div>` : ''}
+      <div class="v-actions">
+        <button class="btn btn-secondary" onclick="openVersionModal('${v.projectId}','${v.id}')">편집</button>
+        <button class="btn btn-danger" onclick="deleteVersion('${v.id}')">삭제</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleVersion(id) {
+  document.getElementById('vc-' + id)?.classList.toggle('expanded');
+}
+
+// ─── ALL VERSIONS ────────────────────────────────────────────
+function renderAllVersions() {
+  const allV = [...state.versions].sort((a,b) => b.date > a.date ? 1 : -1);
+  const el = document.getElementById('all-versions');
+  el.style.display = 'block';
+
+  el.innerHTML = `
+    <div style="margin-bottom:24px;">
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:6px;">ALL VERSIONS</div>
+      <div style="font-family:'Instrument Serif',serif;font-size:28px;font-style:italic;">전체 업데이트 로그</div>
+    </div>
+    ${allV.length === 0
+      ? `<div style="color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;">아직 버전이 없어요!</div>`
+      : allV.map(v => {
+          const p = state.projects.find(p => p.id === v.projectId);
+          return `<div style="margin-bottom:2px;">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);padding:8px 0 4px;">${p?.name || '?'}</div>
+            ${renderVersionCard(v)}
+          </div>`;
+        }).join('')
+    }
+  `;
+}
+
+// ─── PROJECT MODAL ───────────────────────────────────────────
+function openProjectModal(id) {
+  state.editingProjectId = id || null;
+  state.selectedColor = '#c8f04e';
+
+  if (id) {
+    const p = state.projects.find(p => p.id === id);
+    document.getElementById('project-modal-title').textContent = '프로젝트 편집';
+    document.getElementById('pm-id').value = p.id;
+    document.getElementById('pm-name').value = p.name;
+    document.getElementById('pm-desc').value = p.desc || '';
+    state.selectedColor = p.color;
+  } else {
+    document.getElementById('project-modal-title').textContent = '새 프로젝트';
+    document.getElementById('pm-id').value = '';
+    document.getElementById('pm-name').value = '';
+    document.getElementById('pm-desc').value = '';
+  }
+  updateColorOpts();
+  openModal('project-modal');
+}
+
+function selectColor(c) {
+  state.selectedColor = c;
+  updateColorOpts();
+}
+function updateColorOpts() {
+  document.querySelectorAll('.color-opt').forEach(el => {
+    el.classList.toggle('selected', el.dataset.color === state.selectedColor);
+  });
+}
+
+function saveProject() {
+  const name = document.getElementById('pm-name').value.trim();
+  if (!name) { toast('프로젝트 이름을 입력해주세요!'); return; }
+
+  const id = document.getElementById('pm-id').value;
+  if (id) {
+    const p = state.projects.find(p => p.id === id);
+    p.name = name;
+    p.desc = document.getElementById('pm-desc').value.trim();
+    p.color = state.selectedColor;
+  } else {
+    state.projects.push({ id: uid(), name, desc: document.getElementById('pm-desc').value.trim(), color: state.selectedColor });
+  }
+  save(); closeModal('project-modal'); renderSidebar();
+  if (id && state.selectedProject === id) renderMain();
+  toast('저장됐어요 ✓', 'success');
+}
+
+function deleteProject(id) {
+  if (!confirm('이 프로젝트와 모든 버전을 삭제할까요?')) return;
+  state.projects = state.projects.filter(p => p.id !== id);
+  state.versions = state.versions.filter(v => v.projectId !== id);
+  if (state.selectedProject === id) state.selectedProject = null;
+  save(); renderSidebar(); renderMain();
+  toast('삭제됐어요');
+}
+
+// ─── VERSION MODAL ───────────────────────────────────────────
+function openVersionModal(projectId, versionId) {
+  state.selectedTags = [];
+  document.querySelectorAll('.tag-opt').forEach(el => el.className = 'tag-opt');
+
+  if (versionId) {
+    const v = state.versions.find(v => v.id === versionId);
+    document.getElementById('version-modal-title').textContent = '버전 편집';
+    document.getElementById('vm-id').value = v.id;
+    document.getElementById('vm-project-id').value = v.projectId;
+    document.getElementById('vm-version').value = v.version;
+    document.getElementById('vm-date').value = v.date;
+    document.getElementById('vm-title').value = v.title || '';
+    document.getElementById('vm-changes').value = v.changes || '';
+    document.getElementById('vm-reason').value = v.reason || '';
+    document.getElementById('vm-error').value = v.error || '';
+    document.getElementById('vm-drive').value = v.drive || '';
+    document.getElementById('vm-file-name').value = v.fileName || '';
+    document.getElementById('vm-file-content').value = v.fileContent || '';
+    if (v.fileName) {
+      const area = document.getElementById('file-upload-area');
+      document.getElementById('file-upload-label').textContent = '✓ ' + v.fileName;
+      area.classList.add('has-file');
+    } else resetFileUpload();
+    state.selectedTags = v.tags || [];
+    state.selectedTags.forEach(t => {
+      const el = document.querySelector(`.tag-opt[data-tag="${t}"]`);
+      if (el) el.className = `tag-opt selected-${t}`;
+    });
+  } else {
+    document.getElementById('version-modal-title').textContent = '버전 추가';
+    document.getElementById('vm-id').value = '';
+    document.getElementById('vm-project-id').value = projectId;
+    document.getElementById('vm-version').value = '';
+    document.getElementById('vm-date').value = today();
+    document.getElementById('vm-title').value = '';
+    document.getElementById('vm-changes').value = '';
+    document.getElementById('vm-reason').value = '';
+    document.getElementById('vm-error').value = '';
+    document.getElementById('vm-drive').value = '';
+    document.getElementById('vm-file-name').value = '';
+    document.getElementById('vm-file-content').value = '';
+    resetFileUpload();
+  }
+  openModal('version-modal');
+}
+
+function toggleTag(el) {
+  const tag = el.dataset.tag;
+  if (state.selectedTags.includes(tag)) {
+    state.selectedTags = state.selectedTags.filter(t => t !== tag);
+    el.className = 'tag-opt';
+  } else {
+    state.selectedTags.push(tag);
+    el.className = `tag-opt selected-${tag}`;
+  }
+}
+
+function saveVersion() {
+  const version = document.getElementById('vm-version').value.trim();
+  const title = document.getElementById('vm-title').value.trim();
+  if (!version) { toast('버전 번호를 입력해주세요!'); return; }
+  if (!title) { toast('제목을 입력해주세요!'); return; }
+
+  const id = document.getElementById('vm-id').value;
+  const data = {
+    projectId: document.getElementById('vm-project-id').value,
+    version,
+    date: document.getElementById('vm-date').value || today(),
+    title,
+    tags: [...state.selectedTags],
+    changes: document.getElementById('vm-changes').value.trim(),
+    reason: document.getElementById('vm-reason').value.trim(),
+    error: document.getElementById('vm-error').value.trim(),
+    drive: document.getElementById('vm-drive').value.trim(),
+    fileName: document.getElementById('vm-file-name').value || null,
+    fileContent: document.getElementById('vm-file-content').value || null,
+  };
+
+  if (id) {
+    const idx = state.versions.findIndex(v => v.id === id);
+    state.versions[idx] = { ...state.versions[idx], ...data };
+  } else {
+    state.versions.push({ id: uid(), ...data });
+  }
+
+  save(); closeModal('version-modal'); renderMain();
+  toast('버전이 저장됐어요 ✓', 'success');
+}
+
+function deleteVersion(id) {
+  if (!confirm('이 버전 기록을 삭제할까요?')) return;
+  state.versions = state.versions.filter(v => v.id !== id);
+  save(); renderMain();
+  toast('삭제됐어요');
+}
+
+// ─── MODAL HELPERS ───────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
+});
+
+// ─── FILE HANDLING ───────────────────────────────────────────
+function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('vm-file-name').value = file.name;
+    document.getElementById('vm-file-content').value = e.target.result;
+    const area = document.getElementById('file-upload-area');
+    document.getElementById('file-upload-label').textContent = '✓ ' + file.name;
+    area.classList.add('has-file');
+    toast('파일 로드됐어요 ✓', 'success');
+  };
+  reader.readAsText(file);
+}
+
+function resetFileUpload() {
+  const area = document.getElementById('file-upload-area');
+  document.getElementById('file-upload-label').textContent = '📎 클릭해서 HTML 파일 선택';
+  area.classList.remove('has-file');
+  document.getElementById('vm-file-input').value = '';
+}
+
+function previewFile(versionId) {
+  const v = state.versions.find(v => v.id === versionId);
+  if (!v?.fileContent) return;
+  const blob = new Blob([v.fileContent], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+
+function downloadFile(versionId) {
+  const v = state.versions.find(v => v.id === versionId);
+  if (!v?.fileContent) return;
+  const blob = new Blob([v.fileContent], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = v.fileName || 'file.html';
+  a.click();
+  toast('다운로드 시작! ⬇', 'success');
+}
+
+// ─── SETTINGS MODAL ──────────────────────────────────────────
+function openSettingsModal() {
+  const c = getGHConfig();
+  document.getElementById('s-owner').value = c.owner;
+  document.getElementById('s-repo').value = c.repo;
+  document.getElementById('s-token').value = c.token;
+  openModal('settings-modal');
+}
+
+async function saveGHConfig() {
+  const owner = document.getElementById('s-owner').value.trim();
+  const repo  = document.getElementById('s-repo').value.trim();
+  const token = document.getElementById('s-token').value.trim();
+  if (!owner || !repo || !token) { toast('모두 입력해주세요!'); return; }
+  localStorage.setItem('gh-owner', owner);
+  localStorage.setItem('gh-repo',  repo);
+  localStorage.setItem('gh-token', token);
+  _sha = null;
+  closeModal('settings-modal');
+  toast('GitHub 연동 시도 중...', '');
+  await load();
+  renderSidebar();
+  renderMain();
+  if (isGHConfigured()) toast('GitHub 연동 완료! ✓', 'success');
+}
+
+function clearGHConfig() {
+  if (!confirm('GitHub 연동을 해제할까요? (로컬 데이터는 유지됩니다)')) return;
+  localStorage.removeItem('gh-owner');
+  localStorage.removeItem('gh-repo');
+  localStorage.removeItem('gh-token');
+  _sha = null;
+  setSyncStatus('local');
+  closeModal('settings-modal');
+  toast('연동 해제됐어요');
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+load().then(() => {
+  renderSidebar();
+  renderMain();
+});
+</script>
+</body>
+</html>
