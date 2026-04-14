@@ -1,4 +1,11 @@
 {
-  "projects": [],
+  "projects": [
+    {
+      "id": "mnxyjoxwm4f2b",
+      "name": "sol-dev-archive_v2",
+      "desc": "개발 파일 저장공간",
+      "color": "#c8f04e"
+    }
+  ],
   "versions": []
 }
