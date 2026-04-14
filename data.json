@@ -5,6 +5,12 @@
       "name": "sol-dev-archive_v2",
       "desc": "개발 파일 저장공간",
       "color": "#c8f04e"
+    },
+    {
+      "id": "mnxyqtkkcy5bw",
+      "name": "밸런스게임",
+      "desc": "부서장 교육 3차시  밸런스게임용도로 개발",
+      "color": "#c8f04e"
     }
   ],
   "versions": [
